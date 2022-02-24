@@ -28,7 +28,7 @@ namespace Assets.Scripts
 
         public virtual int Index { get; set; }
         public virtual string SkillName { get; set; }
-        public virtual Item.Spec SkillSpec { get; set; }
+        //public virtual Item.Spec SkillSpec { get; set; }
         public virtual Resource SkillResource { get; set; }
         public virtual float Range { get; set; }  
 

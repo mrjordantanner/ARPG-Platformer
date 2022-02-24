@@ -47,10 +47,7 @@ namespace Assets.Scripts
         StatRange magical_Armor = new StatRange(1.0f, 2.0f);
         StatRange magical_coreStat = new StatRange(32, 50);
         StatRange magical_WeaponDamage = new StatRange(125, 175);
-        #endregion
 
-        public enum WeaponType { Sword, Axe, Mace, Staff, Dagger }
-        public enum ArmorType { Helm, Mail, Cloak, Bracers, Boots }
 
         // Create an item of random quality and type
         public void CreateItem()
@@ -59,9 +56,9 @@ namespace Assets.Scripts
         }
 
         // Create an item of given quality of random type
-        public void CreateItem(Item.Quality quality)
+        public void CreateItem(ItemQuality quality)
         {
-            if (ShouldRollWeapon())
+            if (LootController.Instance.ShouldRollWeapon())
             {
                 CreateWeapon(quality);
             }
@@ -72,388 +69,292 @@ namespace Assets.Scripts
         }
 
         #region CreateArmor
-        public void CreateArmor(Item.Quality quality, Item.Armor.Type type)
+        public void CreateArmor(ItemQuality quality, ArmorType type)
         {
-            Item.Armor newArmor = new Item.Armor(quality, type);
-            newArmor.itemAttributes = new List<StatModifier>();
-            newArmor.itemName = GenerateArmorName(type, quality);
-            GenerateItemID(newArmor);
-            GenerateItemID(newArmor);
+            Armor newArmor = new Armor(quality, type);
+            newArmor.attributes = new List<StatModifier>();
+            newArmor.Name = GenerateArmorName(type, quality);
+            //GenerateItemID(newArmor);
+            newArmor.ID = new Guid();
 
             switch (quality)
             {
-                case Item.Quality.Common:
-
-                    newArmor.icon.bg.sprite = Resources.Load<Sprite>("Icons/Backgrounds/white");
-
+                case ItemQuality.Common:
 
                     switch (type)
                     {
-                        case Item.Armor.Type.Helm:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.helms);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedHelm, newArmor, Stats.Instance.Defense, common_Armor.min, common_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedHelm, newArmor, Stats.Instance.Intelligence, common_coreStat.min, common_coreStat.max, StatModType.Flat, 1f);
+                        case ArmorType.Helm:
+                            CreateNewStatModifier(StatModifierSource.EquippedHelm, newArmor, Stats.Instance.Defense, common_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedHelm, newArmor, Stats.Instance.Intelligence, common_coreStat);
                             break;
 
-                        case Item.Armor.Type.Mail:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.mail);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedMail, newArmor, Stats.Instance.Defense, common_Armor.min, common_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedMail, newArmor, Stats.Instance.Constitution, common_coreStat.min, common_coreStat.max, StatModType.Flat, 1f);
+                        case ArmorType.Mail:
+                            CreateNewStatModifier(StatModifierSource.EquippedMail, newArmor, Stats.Instance.Defense, common_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedMail, newArmor, Stats.Instance.Constitution, common_coreStat);
                             break;
 
-                        case Item.Armor.Type.Cloak:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.cloaks);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedCloak, newArmor, Stats.Instance.Defense, common_Armor.min, common_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedCloak, newArmor, Stats.Instance.Luck, common_coreStat.min, common_coreStat.max, StatModType.Flat, 1f);
+                        case ArmorType.Cloak:
+                            CreateNewStatModifier(StatModifierSource.EquippedCloak, newArmor, Stats.Instance.Defense, common_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedCloak, newArmor, Stats.Instance.Luck, common_coreStat);
                             break;
 
-                        case Item.Armor.Type.Bracers:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.bracers);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBracers, newArmor, Stats.Instance.Defense, common_Armor.min, common_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedBracers, newArmor, Stats.Instance.Strength, common_coreStat.min, common_coreStat.max, StatModType.Flat, 1f);
+                        case ArmorType.Bracers:
+                            CreateNewStatModifier(StatModifierSource.EquippedBracers, newArmor, Stats.Instance.Defense, common_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedBracers, newArmor, Stats.Instance.Strength, common_coreStat);
                             break;
 
-                        case Item.Armor.Type.Boots:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.boots);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBoots, newArmor, Stats.Instance.Defense, common_Armor.min, common_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedBoots, newArmor, Stats.Instance.Agility, common_coreStat.min, common_coreStat.max, StatModType.Flat, 1f);
+                        case ArmorType.Boots:
+                            CreateNewStatModifier(StatModifierSource.EquippedBoots, newArmor, Stats.Instance.Defense, common_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedBoots, newArmor, Stats.Instance.Agility, common_coreStat);
                             break;
                     }
                     break;
 
-                case Item.Quality.Rare:
-
-                    newArmor.icon.bg.sprite = Resources.Load<Sprite>("Icons/Backgrounds/gold");
+                case ItemQuality.Rare:
 
                     switch (type)
                     {
-                        case Item.Armor.Type.Helm:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.helms);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedHelm, newArmor, Stats.Instance.Defense, rare_Armor.min, rare_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedHelm, newArmor, Stats.Instance.Intelligence, rare_coreStat.min, rare_coreStat.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedHelm, newArmor, Stats.Instance.MaxMagic, rare_Small.min, rare_Small.max, StatModType.PercentAdd, 1f);
+                        case ArmorType.Helm:
+                            CreateNewStatModifier(StatModifierSource.EquippedHelm, newArmor, Stats.Instance.Defense, rare_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedHelm, newArmor, Stats.Instance.Intelligence, rare_coreStat);
+                            CreateNewStatModifier(StatModifierSource.EquippedHelm, newArmor, Stats.Instance.MaxMagic, rare_Small);
                             break;
 
-                        case Item.Armor.Type.Mail:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.mail);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedMail, newArmor, Stats.Instance.Defense, rare_Armor.min, rare_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedMail, newArmor, Stats.Instance.Constitution, rare_coreStat.min, rare_coreStat.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedMail, newArmor, Stats.Instance.MaxHealth, rare_Large.min, rare_Large.max, StatModType.PercentAdd, 1f);
+                        case ArmorType.Mail:
+                            CreateNewStatModifier(StatModifierSource.EquippedMail, newArmor, Stats.Instance.Defense, rare_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedMail, newArmor, Stats.Instance.Constitution, rare_coreStat);
+                            CreateNewStatModifier(StatModifierSource.EquippedMail, newArmor, Stats.Instance.MaxHealth, rare_Large);
                             break;
 
-                        case Item.Armor.Type.Cloak:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.cloaks);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedCloak, newArmor, Stats.Instance.Defense, rare_Armor.min, rare_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedCloak, newArmor, Stats.Instance.Luck, rare_coreStat.min, rare_coreStat.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedCloak, newArmor, Stats.Instance.DodgeChance, rare_Small.min, rare_Small.max, StatModType.Flat, 1f);
+                        case ArmorType.Cloak:
+                            CreateNewStatModifier(StatModifierSource.EquippedCloak, newArmor, Stats.Instance.Defense, rare_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedCloak, newArmor, Stats.Instance.Luck, rare_coreStat);
+                            CreateNewStatModifier(StatModifierSource.EquippedCloak, newArmor, Stats.Instance.DodgeChance, rare_Small);
                             break;
 
-                        case Item.Armor.Type.Bracers:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.bracers);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBracers, newArmor, Stats.Instance.Defense, rare_Armor.min, rare_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedBracers, newArmor, Stats.Instance.Strength, rare_coreStat.min, rare_coreStat.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBracers, newArmor, Stats.Instance.CritDamage, rare_Large.min, rare_Large.max, StatModType.Flat, 1f);
+                        case ArmorType.Bracers:
+                            CreateNewStatModifier(StatModifierSource.EquippedBracers, newArmor, Stats.Instance.Defense, rare_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedBracers, newArmor, Stats.Instance.Strength, rare_coreStat);
+                            CreateNewStatModifier(StatModifierSource.EquippedBracers, newArmor, Stats.Instance.CritDamage, rare_Large);
                             break;
 
-                        case Item.Armor.Type.Boots:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.boots);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBoots, newArmor, Stats.Instance.Defense, rare_Armor.min, rare_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedBoots, newArmor, Stats.Instance.Agility, rare_coreStat.min, rare_coreStat.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBoots, newArmor, Stats.Instance.MoveSpeed, rare_Small.min, rare_Small.max, StatModType.Flat, 1f);
+                        case ArmorType.Boots:
+                            CreateNewStatModifier(StatModifierSource.EquippedBoots, newArmor, Stats.Instance.Defense, rare_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedBoots, newArmor, Stats.Instance.Agility, rare_coreStat);
+                            CreateNewStatModifier(StatModifierSource.EquippedBoots, newArmor, Stats.Instance.MoveSpeed, rare_Small);
                             break;
                     }
                     break;
 
-                case Item.Quality.Magical:
-
-                    newArmor.icon.bg.sprite = Resources.Load<Sprite>("Icons/Backgrounds/purple");
+                case ItemQuality.Magical:
 
                     switch (type)
                     {
-                        case Item.Armor.Type.Helm:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.helms);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedHelm, newArmor, Stats.Instance.Defense, magical_Armor.min, magical_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedHelm, newArmor, Stats.Instance.Intelligence, magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedHelm, newArmor, Stats.Instance.MaxMagic, magical_Small.min, magical_Small.max, StatModType.PercentAdd, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedHelm, newArmor, FiftyFiftyAttribute(Stats.Instance.MagicOnHit, Stats.Instance.MagicRegen), magical_Small.min, magical_Small.max, StatModType.Flat, 0.75f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedHelm, newArmor, Stats.Instance.MagicDamageBonus, 0.15f, 0.25f, StatModType.PercentAdd, 0.5f);
+                        case ArmorType.Helm:
+                            CreateNewStatModifier(StatModifierSource.EquippedHelm, newArmor, Stats.Instance.Defense, magical_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedHelm, newArmor, Stats.Instance.Intelligence, magical_coreStat);
+                            CreateNewStatModifier(StatModifierSource.EquippedHelm, newArmor, Stats.Instance.MaxMagic, magical_Small);
+                            CreateNewStatModifier(StatModifierSource.EquippedHelm, newArmor, FiftyFiftyAttribute(Stats.Instance.MagicOnHit, Stats.Instance.MagicRegen), magical_Small, StatModType.Flat, 0.75f);
+                            CreateNewStatModifier(StatModifierSource.EquippedHelm, newArmor, Stats.Instance.MagicDamageBonus, magical_Small, StatModType.PercentAdd, 0.5f);
                             break;
 
-                        case Item.Armor.Type.Mail:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.mail);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedMail, newArmor, Stats.Instance.Defense, magical_Armor.min, magical_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedMail, newArmor, Stats.Instance.Constitution, magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedMail, newArmor, Stats.Instance.MaxHealth, magical_Large.min, magical_Large.max, StatModType.PercentAdd, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedMail, newArmor, FiftyFiftyAttribute(Stats.Instance.LifeOnHit, Stats.Instance.LifeRegen), magical_Small.min, magical_Small.max, StatModType.Flat, 0.75f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedMail, newArmor, Stats.Instance.Defense, magical_Armor.min, magical_Armor.max, StatModType.Flat, 0.5f);
-
+                        case ArmorType.Mail:
+                            CreateNewStatModifier(StatModifierSource.EquippedMail, newArmor, Stats.Instance.Defense, magical_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedMail, newArmor, Stats.Instance.Constitution, magical_coreStat);
+                            CreateNewStatModifier(StatModifierSource.EquippedMail, newArmor, Stats.Instance.MaxHealth, magical_Large, StatModType.PercentAdd, 1f);
+                            CreateNewStatModifier(StatModifierSource.EquippedMail, newArmor, FiftyFiftyAttribute(Stats.Instance.LifeOnHit, Stats.Instance.LifeRegen), magical_Small, StatModType.Flat, 0.75f);
+                            CreateNewStatModifier(StatModifierSource.EquippedMail, newArmor, Stats.Instance.Defense, magical_Armor, StatModType.Flat, 0.5f);
                             break;
 
-                        case Item.Armor.Type.Cloak:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.cloaks);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedCloak, newArmor, Stats.Instance.Defense, magical_Armor.min, magical_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedCloak, newArmor, Stats.Instance.Luck, magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedCloak, newArmor, Stats.Instance.DodgeChance, magical_Small.min, magical_Small.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedCloak, newArmor, FiftyFiftyAttribute(Stats.Instance.GoldBonus, Stats.Instance.TreasureBonus), magical_Large.min, magical_Large.max, StatModType.Flat, 0.75f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedCloak, newArmor, Stats.Instance.CritChance, magical_Large.min, magical_Large.max, StatModType.Flat, 0.5f);
+                        case ArmorType.Cloak:
+                            CreateNewStatModifier(StatModifierSource.EquippedCloak, newArmor, Stats.Instance.Defense, magical_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedCloak, newArmor, Stats.Instance.Luck, magical_coreStat);
+                            CreateNewStatModifier(StatModifierSource.EquippedCloak, newArmor, Stats.Instance.DodgeChance, magical_Small);
+                            CreateNewStatModifier(StatModifierSource.EquippedCloak, newArmor, FiftyFiftyAttribute(Stats.Instance.GoldBonus, Stats.Instance.TreasureBonus), magical_Large, StatModType.Flat, 0.75f);
+                            CreateNewStatModifier(StatModifierSource.EquippedCloak, newArmor, Stats.Instance.CritChance, magical_Large, StatModType.Flat, 0.5f);
                             break;
 
-                        case Item.Armor.Type.Bracers:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.bracers);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBracers, newArmor, Stats.Instance.Defense, magical_Armor.min, magical_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedBracers, newArmor, Stats.Instance.Strength, magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBracers, newArmor, Stats.Instance.CritDamage, magical_Large.min, magical_Large.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBracers, newArmor, FiftyFiftyAttribute(Stats.Instance.WeaponDamageBonus, Stats.Instance.MagicDamageBonus), magical_Large.min, magical_Large.max, StatModType.PercentAdd, 0.75f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedBracers, newArmor, Stats.Instance.XPBonus, 0.10f, 0.20f, StatModType.Flat, 0.5f);
+                        case ArmorType.Bracers:
+                            CreateNewStatModifier(StatModifierSource.EquippedBracers, newArmor, Stats.Instance.Defense, magical_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedBracers, newArmor, Stats.Instance.Strength, magical_coreStat);
+                            CreateNewStatModifier(StatModifierSource.EquippedBracers, newArmor, Stats.Instance.CritDamage, magical_Large);
+                            CreateNewStatModifier(StatModifierSource.EquippedBracers, newArmor, FiftyFiftyAttribute(Stats.Instance.WeaponDamageBonus, Stats.Instance.MagicDamageBonus), magical_Large, StatModType.PercentAdd, 0.75f);
+                            CreateNewStatModifier(StatModifierSource.EquippedBracers, newArmor, Stats.Instance.XPBonus, magical_Small, StatModType.Flat, 0.5f);
                             break;
 
-                        case Item.Armor.Type.Boots:
-                            newArmor.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.armor.boots);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBoots, newArmor, Stats.Instance.Defense, magical_Armor.min, magical_Armor.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedBoots, newArmor, Stats.Instance.Agility, magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBoots, newArmor, Stats.Instance.MoveSpeed, magical_Small.min, magical_Small.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedBoots, newArmor, FiftyFiftyAttribute(Stats.Instance.PickupRadius, Stats.Instance.GoldBonus), magical_Large.min, magical_Large.max, StatModType.Flat, 0.75f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedBoots, newArmor, Stats.Instance.DodgeChance, 0.05f, 0.10f, StatModType.Flat, 0.5f);
+                        case ArmorType.Boots:
+                            CreateNewStatModifier(StatModifierSource.EquippedBoots, newArmor, Stats.Instance.Defense, magical_Armor);
+                            CreateNewStatModifier(StatModifierSource.EquippedBoots, newArmor, Stats.Instance.Agility, magical_coreStat);
+                            CreateNewStatModifier(StatModifierSource.EquippedBoots, newArmor, Stats.Instance.MoveSpeed, magical_Small);
+                            CreateNewStatModifier(StatModifierSource.EquippedBoots, newArmor, FiftyFiftyAttribute(Stats.Instance.PickupRadius, Stats.Instance.GoldBonus), magical_Large, StatModType.Flat, 0.75f);
+                            CreateNewStatModifier(StatModifierSource.EquippedBoots, newArmor, Stats.Instance.DodgeChance, magical_Small, StatModType.Flat, 0.5f);
                             break;
                     }
                     break;
             }
 
-            Inventory.Instance.inventoryItems.Add(newArmor);
-            Inventory.Instance.UpdateInventoryUI();
+            Inventory.Instance.Add(newArmor);
 
-            print("Armor Name: " + newArmor.itemName + "/ ID: " + newArmor.ID + "/Icon: " + newArmor.icon.bg);
-            foreach (var attribute in newArmor.itemAttributes)
-                print("" + attribute.StatType + " " + attribute.Value);
+            //print("Armor Name: " + newArmor.Name + "/ ID: " + newArmor.ID + "/Icon: " + newArmor.icon.bg);
+            //foreach (var attribute in newArmor.attributes)
+            //    print("" + attribute.StatType + " " + attribute.Value);
         }
 
-        public void CreateArmor(Item.Quality quality)
+        public void CreateArmor(ItemQuality quality)
         {
             CreateArmor(quality, GetRandomArmorType());
         }
         #endregion
 
+
+
+
         #region CreateWeapon
-        public void CreateWeapon(Item.Quality quality, Item.Weapon.Type type)
+        public Weapon CreateWeapon(ItemQuality quality, WeaponType type)
         {
-            Item.Weapon newWeapon = new Item.Weapon(quality, type);
-            newWeapon.itemAttributes = new List<StatModifier>();
-            newWeapon.itemName = GenerateWeaponName(type, quality);
-            GenerateItemID(newWeapon);
-            AssignWeaponAttackObject(newWeapon);
+           var newWeapon = new Weapon(quality, type);
+           newWeapon.attributes = new List<StatModifier>();
+           newWeapon.Name = GenerateWeaponName(type, quality);
+            //GenerateItemID(newWeapon);
+           newWeapon.ID = new Guid();
+            //AssignWeaponAttackObject(newWeapon);
 
             switch (quality)
             {
-                case Item.Quality.Common:
+                case ItemQuality.Common:
 
-                    newWeapon.icon.bg.sprite = Resources.Load<Sprite>("Icons/Backgrounds/white");
-
-                    CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.WeaponDamage, common_WeaponDamage.min, common_WeaponDamage.max, StatModType.Flat, 1f);
-                    CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.WeaponDamageBonus, common_Large.min, common_Large.max, StatModType.Flat, 0.10f);
+                    CreateNewStatModifier(newWeapon, Stats.Instance.WeaponDamage, common_WeaponDamage);
+                    CreateNewStatModifier(newWeapon, Stats.Instance.WeaponDamageBonus, common_Large, StatModType.Flat, 0.10f);
 
                     switch (type)
                     {
-                        case Item.Weapon.Type.Sword:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.swords);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Luck, common_coreStat.min, common_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.CritChance, common_Small.min, common_Small.max, StatModType.Flat, 0.5f);
+                        case WeaponType.Sword:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Luck, common_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.CritChance, common_Small, StatModType.Flat, 0.5f);
                             break;
 
-                        case Item.Weapon.Type.Axe:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.axes);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Strength, common_coreStat.min, common_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.CritDamage, common_Large.min, common_Large.max, StatModType.Flat, 0.5f);
+                        case WeaponType.Axe:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Strength, common_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.CritDamage, common_Large, StatModType.Flat, 0.5f);
                             break;
 
-                        case Item.Weapon.Type.Mace:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.maces);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Constitution, common_coreStat.min, common_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.LifeRegen, common_Small.min, common_Small.max, StatModType.Flat, 0.5f);
+                        case WeaponType.Mace:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Constitution, common_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.LifeRegen, common_Small, StatModType.Flat, 0.5f);
                             break;
 
-                        case Item.Weapon.Type.Staff:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.staves);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Intelligence, common_coreStat.min, common_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.MagicDamageBonus, common_Large.min, common_Large.max, StatModType.Flat, 0.5f);
+                        case WeaponType.Staff:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Intelligence, common_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.MagicDamageBonus, common_Large, StatModType.Flat, 0.5f);
                             break;
 
-                        case Item.Weapon.Type.Dagger:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.daggers);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Agility, common_coreStat.min, common_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.DodgeChance, common_Small.min, common_Small.max, StatModType.Flat, 0.5f);
+                        case WeaponType.Dagger:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Agility, common_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.DodgeChance, common_Small, StatModType.Flat, 0.5f);
                             break;
                     }
                     break;
 
-                case Item.Quality.Rare:
+                case ItemQuality.Rare:
 
-                    newWeapon.icon.bg.sprite = Resources.Load<Sprite>("Icons/Backgrounds/gold");
-
-                    CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.WeaponDamage, rare_WeaponDamage.min, rare_WeaponDamage.max, StatModType.Flat, 1f);
-                    CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.WeaponDamageBonus, rare_Large.min, rare_Large.max, StatModType.Flat, 0.35f);
+                    CreateNewStatModifier(newWeapon, Stats.Instance.WeaponDamage, rare_WeaponDamage);
+                    CreateNewStatModifier(newWeapon, Stats.Instance.WeaponDamageBonus, rare_Large, StatModType.Flat, 0.35f);
 
                     switch (type)
                     {
-                        case Item.Weapon.Type.Sword:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.swords);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Luck, rare_coreStat.min, rare_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.CritChance, rare_Small.min, rare_Small.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.LifeOnHit, Stats.Instance.MagicOnHit), rare_Small.min, rare_Small.max, StatModType.Flat, 1f);
+                        case WeaponType.Sword:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Luck, rare_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.CritChance, rare_Small);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.LifeOnHit, Stats.Instance.MagicOnHit), rare_Small);
                             break;
 
-                        case Item.Weapon.Type.Axe:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.axes);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Strength, rare_coreStat.min, rare_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.CritDamage, rare_Large.min, rare_Large.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.CritChance, Stats.Instance.MagicDamageBonus), rare_Small.min, rare_Small.max, StatModType.Flat, 1f);
-
+                        case WeaponType.Axe:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Strength, rare_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.CritDamage, rare_Large);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.CritChance, Stats.Instance.MagicDamageBonus), rare_Small);
                             break;
 
-                        case Item.Weapon.Type.Mace:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.maces);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Constitution, rare_coreStat.min, rare_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.LifeRegen, rare_Small.min, rare_Small.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.MaxMagic, Stats.Instance.MaxHealth), rare_Small.min, rare_Small.max, StatModType.PercentAdd, 1f);
-
-
+                        case WeaponType.Mace:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Constitution, rare_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.LifeRegen, rare_Small);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.MaxMagic, Stats.Instance.MaxHealth), rare_Small);
                             break;
 
-                        case Item.Weapon.Type.Staff:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.staves);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Intelligence, rare_coreStat.min, rare_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.MagicDamageBonus, rare_Large.min, rare_Large.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.MagicOnHit, Stats.Instance.MagicRegen), rare_Small.min, rare_Small.max, StatModType.Flat, 1f);
-
+                        case WeaponType.Staff:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Intelligence, rare_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.MagicDamageBonus, rare_Large);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.MagicOnHit, Stats.Instance.MagicRegen), rare_Small);
                             break;
 
-                        case Item.Weapon.Type.Dagger:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.daggers);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Agility, rare_coreStat.min, rare_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.DodgeChance, rare_Small.min, rare_Small.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.LifeOnHit, Stats.Instance.CritChance), rare_Small.min, rare_Small.max, StatModType.Flat, 1f);
-
+                        case WeaponType.Dagger:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Agility, rare_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.DodgeChance, rare_Small);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.LifeOnHit, Stats.Instance.CritChance), rare_Small);
                             break;
                     }
                     break;
 
-                case Item.Quality.Magical:
+                case ItemQuality.Magical:
 
-                    newWeapon.icon.bg.sprite = Resources.Load<Sprite>("Icons/Backgrounds/purple");
-
-                    CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.WeaponDamage, magical_WeaponDamage.min, magical_WeaponDamage.max, StatModType.Flat, 1f);
-                    CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.WeaponDamageBonus, magical_Large.min, magical_Large.max, StatModType.Flat, 0.65f);
+                    CreateNewStatModifier(newWeapon, Stats.Instance.WeaponDamage, magical_WeaponDamage);
+                    CreateNewStatModifier(newWeapon, Stats.Instance.WeaponDamageBonus, magical_Large, StatModType.Flat, 0.65f);
 
                     switch (type)
                     {
-                        case Item.Weapon.Type.Sword:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.swords);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Luck, magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.CritChance, magical_Small.min, magical_Small.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.LifeOnHit, Stats.Instance.MagicOnHit), magical_Small.min, magical_Small.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.Strength, Stats.Instance.Intelligence), magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.Agility, Stats.Instance.Constitution), magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 0.5f);
+                        case WeaponType.Sword:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Luck, magical_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.CritChance, magical_Small);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.LifeOnHit, Stats.Instance.MagicOnHit), magical_Small);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.Strength, Stats.Instance.Intelligence), magical_coreStat);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.Agility, Stats.Instance.Constitution), magical_coreStat, StatModType.Flat, 0.5f);
                             break;
 
-                        case Item.Weapon.Type.Axe:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.axes);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Strength, magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.CritDamage, magical_Large.min, magical_Large.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.CritChance, Stats.Instance.MagicDamageBonus), magical_Small.min, magical_Small.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.Luck, Stats.Instance.Agility), magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.Constitution, Stats.Instance.Intelligence), magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 0.5f);
+                        case WeaponType.Axe:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Strength, magical_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.CritDamage, magical_Large);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.CritChance, Stats.Instance.MagicDamageBonus), magical_Small);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.Luck, Stats.Instance.Agility), magical_coreStat);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.Constitution, Stats.Instance.Intelligence), magical_coreStat, StatModType.Flat, 0.5f);
                             break;
 
-                        case Item.Weapon.Type.Mace:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.maces);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Constitution, magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.LifeRegen, magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.MaxMagic, Stats.Instance.MaxHealth), magical_Small.min, magical_Small.max, StatModType.PercentAdd, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.Agility, Stats.Instance.Intelligence), magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.Strength, Stats.Instance.Luck), magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 0.5f);
+                        case WeaponType.Mace:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Constitution, magical_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.LifeRegen, magical_coreStat);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.MaxMagic, Stats.Instance.MaxHealth), magical_Small, StatModType.PercentAdd, 1f);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.Agility, Stats.Instance.Intelligence), magical_coreStat);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.Strength, Stats.Instance.Luck), magical_coreStat, StatModType.Flat, 0.5f);
                             break;
 
-                        case Item.Weapon.Type.Staff:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.staves);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Intelligence, magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.MagicDamageBonus, magical_Large.min, magical_Large.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.MagicOnHit, Stats.Instance.MagicRegen), magical_Small.min, magical_Small.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.Strength, Stats.Instance.Constitution), magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.Agility, Stats.Instance.Luck), magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 0.5f);
-
+                        case WeaponType.Staff:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Intelligence, magical_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.MagicDamageBonus, magical_Large);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.MagicOnHit, Stats.Instance.MagicRegen), magical_Small);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.Strength, Stats.Instance.Constitution), magical_coreStat);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.Agility, Stats.Instance.Luck), magical_coreStat, StatModType.Flat, 0.5f);
                             break;
 
-                        case Item.Weapon.Type.Dagger:
-                            newWeapon.icon.image.sprite = ItemGraphics.Instance.GetRandomIcon(ItemGraphics.Instance.weapons.daggers);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.Agility, magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, Stats.Instance.DodgeChance, magical_Small.min, magical_Small.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.LifeOnHit, Stats.Instance.CritChance), magical_Small.min, magical_Small.max, StatModType.Flat, 1f);
-
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.Luck, Stats.Instance.Intelligence), magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 1f);
-                            CreateNewStatModifier(StatModifier.Source.EquippedWeapon, newWeapon, FiftyFiftyAttribute(Stats.Instance.Constitution, Stats.Instance.Strength), magical_coreStat.min, magical_coreStat.max, StatModType.Flat, 0.5f);
-
+                        case WeaponType.Dagger:
+                            CreateNewStatModifier(newWeapon, Stats.Instance.Agility, magical_coreStat);
+                            CreateNewStatModifier(newWeapon, Stats.Instance.DodgeChance, magical_Small);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.LifeOnHit, Stats.Instance.CritChance), magical_Small);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.Luck, Stats.Instance.Intelligence), magical_coreStat);
+                            CreateNewStatModifier(newWeapon, FiftyFiftyAttribute(Stats.Instance.Constitution, Stats.Instance.Strength), magical_coreStat, StatModType.Flat, 0.5f);
                             break;
                     }
                     break;
             }
 
-            Inventory.Instance.inventoryItems.Add(newWeapon);
-            Inventory.Instance.UpdateInventoryUI();
+            Inventory.Instance.Add(newWeapon);
+            InventoryUI.Refresh();
 
-            print("Weapon Name: " + newWeapon.itemName + "/ ID: " + newWeapon.ID + "/Icon: " + newWeapon.icon.bg);
-            foreach (var attribute in newWeapon.itemAttributes)
-                print("" + attribute.StatType + " " + attribute.Value);
+            //print("Weapon Name: " + newWeapon.Name + "/ ID: " +newWeapon.ID + "/Icon: " +newWeapon.icon.bg);
+            //foreach (var attribute in newWeapon.attributes)
+            //    print("" + attribute.StatType + " " + attribute.Value);
+
+            return newWeapon;
         }
 
-        public void CreateWeapon(Item.Quality quality)
+        public void CreateWeapon(ItemQuality quality)
         {
             CreateWeapon(quality, GetRandomWeaponType());
         }
@@ -461,43 +362,106 @@ namespace Assets.Scripts
         #endregion
 
 
-        void AssignWeaponAttackObject(Item.Weapon weapon)
+        //void AssignWeaponAttackObject(Weapon weapon)
+        //{
+        //    weapon.weaponAttackObject = Resources.Load<WeaponAttackObject>("MeleeWeapons/Sword_Slash-Wide-1");
+        //}
+
+        // CreateStatMod with 100% guaranteed attribute and a Flat StatModType
+        public void CreateNewStatModifier(
+            IEquippable newItem,
+            CharacterStat characterStat,
+            StatRange range)
         {
-            weapon.weaponAttackObject = Resources.Load<WeaponAttackObject>("MeleeWeapons/Sword_Slash-Wide-1");
+
+            var randomValue = RandomRoundedWithinRange(range);
+
+            var newAttribute = new StatModifier(characterStat.type, StatModType.Flat, randomValue, StatModifierSource.EquippedWeapon);
+
+            newItem.attributes.Add(newAttribute);
+
         }
 
 
-        void CreateNewStatModifier(StatModifier.Source source, Item newItem, CharacterStat characterStat, float minValue, float maxValue, StatModType statModType, float chance)
+        // CreateStatMod from a specified Source with 100% guaranteed attribute and a Flat StatModType
+        public void CreateNewStatModifier(
+            StatModifierSource source,
+            IEquippable newItem,
+            CharacterStat characterStat,
+            StatRange range)
+        {
+
+            var randomValue = RandomRoundedWithinRange(range);
+
+            var newAttribute = new StatModifier(characterStat.type, StatModType.Flat, randomValue, StatModifierSource.EquippedWeapon);
+
+            newItem.attributes.Add(newAttribute);
+
+        }
+
+        // CreateStatMod with source of EquippedWeapon
+        public void CreateNewStatModifier(
+            IEquippable newItem,
+            CharacterStat characterStat, 
+            StatRange range,
+            StatModType statModType, 
+            float chance)
         {
             if (Random.value <= chance)
             {
-                float roundedValue = 0;
+                var randomValue = RandomRoundedWithinRange(range);
 
-                var randomValue = Random.Range(minValue, maxValue);
+                var newAttribute = new StatModifier(characterStat.type, statModType, randomValue, StatModifierSource.EquippedWeapon);
 
-                if (randomValue < 1)
-                {
-                    roundedValue = (float)Math.Round(randomValue, 2);
-                }
-                else
-                {
-                    roundedValue = (int)Math.Round(randomValue, 0);
-                }
-
-                StatModifier newAttribute = new StatModifier(characterStat.type, statModType, roundedValue, source);
-
-                newItem.itemAttributes.Add(newAttribute);
+                newItem.attributes.Add(newAttribute);
             }
         }
 
+        // CreateStatMod with given source
+        public void CreateNewStatModifier(
+            StatModifierSource source,
+            IEquippable newItem, 
+            CharacterStat characterStat,
+            StatRange range,
+            StatModType statModType,
+            float chance)
+        {
+            if (Random.value <= chance)
+            {
+                var randomValue = RandomRoundedWithinRange(range);
+
+                var newAttribute = new StatModifier(characterStat.type, statModType, randomValue, source);
+
+                newItem.attributes.Add(newAttribute);
+            }
+        }
+
+        float RandomRoundedWithinRange(StatRange range)
+        {
+            float roundedValue = 0;
+
+            var randomValue = Random.Range(range.min, range.max);
+
+            if (randomValue < 1)
+            {
+                roundedValue = (float)Math.Round(randomValue, 2);
+            }
+            else
+            {
+                roundedValue = (float)Math.Round(randomValue, 0);
+            }
+
+            return roundedValue;
+        }
+
         // TODO: Add word bank for item names
-        string GenerateArmorName(Item.Armor.Type type, Item.Quality quality)
+        string GenerateArmorName(ArmorType type, ItemQuality quality)
         {
             string armorName = $"{quality} {type}";
             return armorName;
         }
 
-        string GenerateWeaponName(Item.Weapon.Type type, Item.Quality quality)
+        string GenerateWeaponName(WeaponType type, ItemQuality quality)
         {
             string weaponName = $"{quality} {type}";
             return weaponName;
@@ -505,24 +469,17 @@ namespace Assets.Scripts
 
 
         #region Helper Functions
-        // Determine whether to roll weapon or armor
-        bool ShouldRollWeapon()
-        {
-            var rnd = Random.Range(0, 100);
-            if (rnd <= LootController.Instance.weaponDropChance) return true;
-            return false;
-        }
 
-        public Item.Weapon.Type GetRandomWeaponType()
+        public WeaponType GetRandomWeaponType()
         {
-            Item.Weapon.Type type = (Item.Weapon.Type)Random.Range(0, Enum.GetNames(typeof(Item.Weapon.Type)).Length);
+            WeaponType type = (WeaponType)Random.Range(0, Enum.GetNames(typeof(WeaponType)).Length);
             //print("Rolled weapon type: " + type);
             return type;
         }
 
-        public Item.Armor.Type GetRandomArmorType()
+        public ArmorType GetRandomArmorType()
         {
-            Item.Armor.Type type = (Item.Armor.Type)Random.Range(0, Enum.GetNames(typeof(Item.Armor.Type)).Length);
+            ArmorType type = (ArmorType)Random.Range(0, Enum.GetNames(typeof(ArmorType)).Length);
             //print("Rolled armor type: " + type);
             return type;
         }
@@ -537,22 +494,22 @@ namespace Assets.Scripts
         }
 
 
-        void GenerateItemID(Item newItem)
+        //void GenerateItemID(IEquippable newItem)
+        //{
+        //    var id = Random.Range(1000, 9999);
+
+        //    // Generate Item ID until it's unique compared to all existing items
+        //    foreach (Item item in Inventory.Instance.inventoryItems)
+        //        if (id == item.ID)
+        //            GenerateItemID(newItem);
+
+        //    newItem.ID = id;
+        //}
+
+
+        public ItemQuality RandomItemQuality()
         {
-            var id = Random.Range(1000, 9999);
-
-            // Generate Item ID until it's unique compared to all existing items
-            foreach (Item item in Inventory.Instance.inventoryItems)
-                if (id == item.ID)
-                    GenerateItemID(newItem);
-
-            newItem.ID = id;
-        }
-
-
-        public Item.Quality RandomItemQuality()
-        {
-            var q = (Item.Quality)Random.Range(0, 2);
+            var q = (ItemQuality)Random.Range(0, 2);
             return q;
         }
 
@@ -563,21 +520,13 @@ namespace Assets.Scripts
         //}
 
 
+        #endregion
+
+
+    }
+
+
+
+
+}
 #endregion
-
-
-    }
-
-
-}
-
-public class StatRange
-{
-    public float min, max;
-
-    public StatRange(float _min, float _max)
-    {
-        min = _min;
-        max = _max;
-    }
-}

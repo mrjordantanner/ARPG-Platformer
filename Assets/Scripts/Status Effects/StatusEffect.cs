@@ -166,7 +166,7 @@ namespace Assets.Scripts
 
 
 
-        protected virtual CharacterStat GetStat(List<CharacterStat> characterStatList, CharacterStat.Type _type)
+        protected virtual CharacterStat GetStat(List<CharacterStat> characterStatList, CharacterStatType _type)
         {
             foreach (CharacterStat characterStat in characterStatList)
             {

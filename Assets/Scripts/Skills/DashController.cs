@@ -8,7 +8,7 @@ namespace Assets.Scripts
     {
         public override int Index { get { return 100; } }
         public override string SkillName { get { return "Dash Attack"; } }
-        public override Item.Spec SkillSpec { get { return Item.Spec.Blood; } }
+        // public override Item.Spec SkillSpec { get { return Item.Spec.Blood; } }
         public override Resource SkillResource { get { return Resource.Stamina; } }
         public override float Range { get { return 4f; } }
 

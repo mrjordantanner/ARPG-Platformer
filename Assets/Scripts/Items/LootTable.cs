@@ -26,7 +26,7 @@ public class LootTable : ScriptableObject
     }
 
     /// <summary>
-    /// Calculates the percentage and asigns the probabilities how many times
+    /// Calculates the percentage and assigns the probabilities how many times
     /// the items can be picked. Function used also to validate data when tweaking numbers in editor.
     /// </summary> 
     public void ValidateTable()
@@ -76,7 +76,6 @@ public class LootTable : ScriptableObject
             }
         }
 
-      //  Debug.LogError("Item couldn't be picked... Be sure that all of your active loot drop tables have assigned at least one item!");
         return weightedItems[0];
     }
 

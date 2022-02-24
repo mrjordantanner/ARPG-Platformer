@@ -4,17 +4,19 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
+    /// <summary>
+    ///  Inherits from StatusEffect. 
+    ///  Creates a temporary StatMod and adds it to Target Entity's appropriate CharacterStat, then removes itself
+    /// </summary>
     public class AffectCharacterStat : StatusEffect
     {
-        // Creates a temporary StatMod and adds it to Target Entity's appropriate CharacterStat, then removes itself
-
         public float value;
-        public CharacterStat.Type StatType;
+        public CharacterStatType StatType;
         public StatModType _StatModType;
         CharacterStat StatToAffect;
         StatModifier StatModInstance;   // reference to the StatMod instance created by the script
 
-        public AffectCharacterStat(string name, EffectType effectType, CharacterStat.Type statType, StatModType statModType,
+        public AffectCharacterStat(string name, EffectType effectType, CharacterStatType statType, StatModType statModType,
             float value, float duration, ApplyMode mode, int maxStacks, GameObject iconPrefab) : base(name, effectType, value, duration, mode, maxStacks, iconPrefab)
         {
             StatType = statType;
@@ -52,7 +54,7 @@ namespace Assets.Scripts
 
         void CreateNewStatModifier()
         {
-            StatModInstance = new StatModifier(StatType, _StatModType, Value, StatModifier.Source.StatusEffect);
+            StatModInstance = new StatModifier(StatType, _StatModType, Value, StatModifierSource.StatusEffect);
             StatToAffect = GetStat(Target.CharacterStats, StatType);
 
             if (StatToAffect != null)

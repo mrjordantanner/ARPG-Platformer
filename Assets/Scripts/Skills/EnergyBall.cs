@@ -11,7 +11,7 @@ namespace Assets.Scripts
 
         public override int Index { get { return 3; } }
         public override string SkillName { get { return "Orb"; } }
-        public override Item.Spec SkillSpec { get { return Item.Spec.Ghost; } }
+        //public override Item.Spec SkillSpec { get { return Item.Spec.Ghost; } }
         public override Resource SkillResource { get { return Resource.Magic; } }
         //public override float Range { get { return 0; } }
 

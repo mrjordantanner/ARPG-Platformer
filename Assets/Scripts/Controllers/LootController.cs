@@ -111,7 +111,6 @@ namespace Assets.Scripts
             goldMedium = new Vector2(500, 5000),
             goldLarge = new Vector2(5000, 100000);
 
-        Item newItem;
         Vector2 dropForce;
 
         public static LootController Instance;
@@ -162,15 +161,21 @@ namespace Assets.Scripts
 
         }
 
-
+        // Determine whether to roll weapon or armor
+        public bool ShouldRollWeapon()
+        {
+            var rnd = Random.Range(0, 100);
+            if (rnd <= weaponDropChance) return true;
+            return false;
+        }
 
         void InitializeLootTables()
         {
             // Quality Loot Table
-            common = new LootTableMember((int)Item.Quality.Common, baseWeightCommon);
-            rare = new LootTableMember((int)Item.Quality.Rare, baseWeightRare);
-            magical = new LootTableMember((int)Item.Quality.Magical, baseWeightMagical);
-            //unique = new LootTableMember((int)Item.Quality.Unique, baseWeightUnique);
+            common = new LootTableMember((int)ItemQuality.Common, baseWeightCommon);
+            rare = new LootTableMember((int)ItemQuality.Rare, baseWeightRare);
+            magical = new LootTableMember((int)ItemQuality.Magical, baseWeightMagical);
+            //unique = new LootTableMember((int)ItemQuality.Unique, baseWeightUnique);
 
             List<LootTableMember> qualityList = new List<LootTableMember>();
             qualityList.Add(common);
@@ -181,17 +186,17 @@ namespace Assets.Scripts
             qualityTable = new LootTable(qualityList);
 
             // Type Loot Table
-            sword = new LootTableMember((int)Item.Weapon.Type.Sword, weightSword);
-            axe = new LootTableMember((int)Item.Weapon.Type.Axe, weightAxe);
-            mace = new LootTableMember((int)Item.Weapon.Type.Mace, weightMace);
-            staff = new LootTableMember((int)Item.Weapon.Type.Staff, weightStaff);
-            dagger = new LootTableMember((int)Item.Weapon.Type.Dagger, weightDagger);
+            sword = new LootTableMember((int)WeaponType.Sword, weightSword);
+            axe = new LootTableMember((int)WeaponType.Axe, weightAxe);
+            mace = new LootTableMember((int)WeaponType.Mace, weightMace);
+            staff = new LootTableMember((int)WeaponType.Staff, weightStaff);
+            dagger = new LootTableMember((int)WeaponType.Dagger, weightDagger);
 
-            helm = new LootTableMember((int)Item.Armor.Type.Helm, weightHelm);
-            mail = new LootTableMember((int)Item.Armor.Type.Mail, weightMail);
-            cloak = new LootTableMember((int)Item.Armor.Type.Cloak, weightCloak);
-            bracers = new LootTableMember((int)Item.Armor.Type.Bracers, weightBracers);
-            boots = new LootTableMember((int)Item.Armor.Type.Boots, weightBoots);
+            helm = new LootTableMember((int)ArmorType.Helm, weightHelm);
+            mail = new LootTableMember((int)ArmorType.Mail, weightMail);
+            cloak = new LootTableMember((int)ArmorType.Cloak, weightCloak);
+            bracers = new LootTableMember((int)ArmorType.Bracers, weightBracers);
+            boots = new LootTableMember((int)ArmorType.Boots, weightBoots);
 
             List<LootTableMember> weaponList = new List<LootTableMember>();
             List<LootTableMember> armorList = new List<LootTableMember>();
@@ -337,20 +342,20 @@ namespace Assets.Scripts
                 if (Random.value <= weaponDropChance)
                 {
                     var type = weaponTable.PickLootTableMember().index;
-                    DropWeaponItem((Item.Quality)quality, (Item.Weapon.Type)type, position, dropMotion);
+                    DropWeaponItem((ItemQuality)quality, (WeaponType)type, position, dropMotion);
                 }
                 else
                 {
                     var type = armorTable.PickLootTableMember().index;
-                    DropArmorItem((Item.Quality)quality, (Item.Armor.Type)type, position, dropMotion);
+                    DropArmorItem((ItemQuality)quality, (ArmorType)type, position, dropMotion);
                 }
 
             }
         }
 
-        public void DropWeaponItem(Item.Quality quality, Item.Weapon.Type type, Vector2 position, bool dropMotion)
+        public void DropWeaponItem(ItemQuality quality, WeaponType type, Vector2 position, bool dropMotion)
         {
-            var newItemObject = Instantiate(WeaponObjectPrefab, position, Quaternion.identity).GetComponentInChildren<WeaponObject>();
+            var newItemObject = Instantiate(WeaponObjectPrefab, position, Quaternion.identity).GetComponentInChildren<WeaponPickup>();
             newItemObject.quality = quality;
             newItemObject.type = type;
             newItemObject.rb = newItemObject.GetComponentInParent<Rigidbody2D>();
@@ -361,9 +366,9 @@ namespace Assets.Scripts
         }
 
 
-        public void DropArmorItem(Item.Quality quality, Item.Armor.Type type, Vector2 position, bool dropMotion)
+        public void DropArmorItem(ItemQuality quality, ArmorType type, Vector2 position, bool dropMotion)
         {
-            var newItemObject = Instantiate(ArmorObjectPrefab, position, Quaternion.identity).GetComponentInChildren<ArmorObject>();
+            var newItemObject = Instantiate(ArmorObjectPrefab, position, Quaternion.identity).GetComponentInChildren<ArmorPickup>();
             newItemObject.quality = quality;
             newItemObject.type = type;
             newItemObject.rb = newItemObject.GetComponentInParent<Rigidbody2D>();

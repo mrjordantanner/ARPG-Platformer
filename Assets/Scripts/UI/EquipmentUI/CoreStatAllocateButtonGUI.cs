@@ -7,7 +7,7 @@ namespace Assets.Scripts
 {
     public class CoreStatAllocateButtonGUI : MonoBehaviour
     {
-        public CharacterStat.Type type;
+        public CharacterStatType type;
         Button button;
 
         private void Start()
@@ -16,23 +16,23 @@ namespace Assets.Scripts
 
             switch (type)
             {
-                case CharacterStat.Type.Strength:
+                case CharacterStatType.Strength:
                     button.onClick.AddListener(() => Stats.Instance.AllocateStatPoint(Stats.Instance.Strength));
                     break;
 
-                case CharacterStat.Type.Constitution:
+                case CharacterStatType.Constitution:
                     button.onClick.AddListener(() => Stats.Instance.AllocateStatPoint(Stats.Instance.Constitution));
                     break;
 
-                case CharacterStat.Type.Agility:
+                case CharacterStatType.Agility:
                     button.onClick.AddListener(() => Stats.Instance.AllocateStatPoint(Stats.Instance.Agility));
                     break;
 
-                case CharacterStat.Type.Intelligence:
+                case CharacterStatType.Intelligence:
                     button.onClick.AddListener(() => Stats.Instance.AllocateStatPoint(Stats.Instance.Intelligence));
                     break;
 
-                case CharacterStat.Type.Luck:
+                case CharacterStatType.Luck:
                     button.onClick.AddListener(() => Stats.Instance.AllocateStatPoint(Stats.Instance.Luck));
                     break;
 

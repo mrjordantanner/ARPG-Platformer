@@ -79,6 +79,7 @@ namespace Assets.Scripts
             WeaponDamageBonus,
             MagicDamageBonus,
             MaxMagic,               // Magic point capacity 
+            AttackSpeed,            // Multiplier that affects the AttackDelay, AttackDuration, and AttackReset WeaponTraits
             // Stamina,             // Used for mobility skills - has Charges / Cooldown functionality
             CritChance,             // Chance on hit (either Melee or Magic) to do CritChance% more damage
             CritDamage,             // Damage is multiplied by this %factor on CriticalHit
@@ -120,20 +121,6 @@ namespace Assets.Scripts
              pickupRadiusModifier_Luck;
 
 
-        // Set default weapon traits 
-        // Instead of being read from Weapon.cs, each Item will actually have these CharacterStats and StatMods on them
-
-        // what determines Weapon and Spell accuracy?  Should it be slightly randomized?  Or hard set for each Spell and Weapon type?
-
-        // attackDelay and attackReset will really just be calculated behind the scenes based on attackSpeed
-        // e.g. attackDelay = attackSpeed * 0.01f;    delay is 1% of the attackSpeed value, and reset is 10% of the attackSpeed value
-        // attackReset = attackSpeed * 0.1f;
-
-        // If Weapon Damage is the Max Damage a hit will cause, 
-        // weaponAccuracy indicates the damage range BELOW that number that could be rolled
-        // e.g. Weapon Damage 1000, WeaponAccuracy 90% = Max Damage 1000 / Min Damage 900
-
-
         [Header("Base Stats")]
         public bool invulnerable;
         public bool resourceCostsRemoved;
@@ -142,6 +129,7 @@ namespace Assets.Scripts
         public float
             baseMoveSpeed = 3,
             baseDefense = 0.01f,
+            baseAttackSpeed = 1.0f,
             baseDodgeChance = 0.01f,
             baseCritChance = 0.005f,
             baseCritDamage = 0.05f,
@@ -227,9 +215,6 @@ namespace Assets.Scripts
         public float mpPercentage;
         float mpRegenTimer;
         public int gold;
-        // public int jewels;
-        // public int difficultyKeys;          // used to permanently unlock higher diff. levels
-
 
         [Header("Misc")]
         public int kills;
@@ -238,15 +223,11 @@ namespace Assets.Scripts
         public int deaths;
         public Vector3 levelPortalLocation;
 
-
- 
-
-
         public static float clock;
         public bool clockRunning;
-        float fastestTime;
-        public float timeThisRun;
-        public static float timePreviousRuns;
+        //float fastestTime;
+        //public float timeThisRun;
+        //public static float timePreviousRuns;
 
         float pickupTimer;
         double startTime;
@@ -345,20 +326,20 @@ namespace Assets.Scripts
         void InitializePlayerStats()
         {
             // CORE STATS
-            Strength = new CharacterStat(CharacterStat.Type.Strength, baseStrength);
-            strength_StatPoints = new StatModifier(CharacterStat.Type.Strength, StatModType.Flat, StatModifier.Source.StatPoints);
+            Strength = new CharacterStat(CharacterStatType.Strength, baseStrength);
+            strength_StatPoints = new StatModifier(CharacterStatType.Strength, StatModType.Flat, StatModifierSource.StatPoints);
 
-            Constitution = new CharacterStat(CharacterStat.Type.Constitution, baseConstitution);
-            constitution_StatPoints = new StatModifier(CharacterStat.Type.Constitution, StatModType.Flat, StatModifier.Source.StatPoints);
+            Constitution = new CharacterStat(CharacterStatType.Constitution, baseConstitution);
+            constitution_StatPoints = new StatModifier(CharacterStatType.Constitution, StatModType.Flat, StatModifierSource.StatPoints);
 
-            Agility = new CharacterStat(CharacterStat.Type.Agility, baseAgility);
-            agility_StatPoints = new StatModifier(CharacterStat.Type.Agility, StatModType.Flat, StatModifier.Source.StatPoints);
+            Agility = new CharacterStat(CharacterStatType.Agility, baseAgility);
+            agility_StatPoints = new StatModifier(CharacterStatType.Agility, StatModType.Flat, StatModifierSource.StatPoints);
 
-            Intelligence = new CharacterStat(CharacterStat.Type.Intelligence, baseIntelligence);
-            intelligence_StatPoints = new StatModifier(CharacterStat.Type.Intelligence, StatModType.Flat, StatModifier.Source.StatPoints);
+            Intelligence = new CharacterStat(CharacterStatType.Intelligence, baseIntelligence);
+            intelligence_StatPoints = new StatModifier(CharacterStatType.Intelligence, StatModType.Flat, StatModifierSource.StatPoints);
 
-            Luck = new CharacterStat(CharacterStat.Type.Luck, baseLuck);
-            luck_StatPoints = new StatModifier(CharacterStat.Type.Luck, StatModType.Flat, StatModifier.Source.StatPoints);
+            Luck = new CharacterStat(CharacterStatType.Luck, baseLuck);
+            luck_StatPoints = new StatModifier(CharacterStatType.Luck, StatModType.Flat, StatModifierSource.StatPoints);
 
             CharacterStats.Add(Strength);
             CharacterStats.Add(Constitution);
@@ -374,27 +355,28 @@ namespace Assets.Scripts
 
 
             // CHARACTER STATS
-            WeaponDamage = new CharacterStat(CharacterStat.Type.WeaponDamage, 0);                  // Base value dictated by equipped weapon -    // Equipping a weapon creates a Flat StatModifier that adds the base Weapon Damage - 
-            MagicDamage = new CharacterStat(CharacterStat.Type.MagicDamage, 0);
-            WeaponDamageBonus = new CharacterStat(CharacterStat.Type.WeaponDamageBonus, 0);
-            MagicDamageBonus = new CharacterStat(CharacterStat.Type.MagicDamageBonus, 0);
-            MaxHealth = new CharacterStat(CharacterStat.Type.MaxHealth, baseMaxHealth);
-            MaxMagic = new CharacterStat(CharacterStat.Type.MaxMagic, baseMaxMagic);
+            WeaponDamage = new CharacterStat(CharacterStatType.WeaponDamage, 0);                  // Base value dictated by equipped weapon -    // Equipping a weapon creates a Flat StatModifier that adds the base Weapon Damage - 
+            MagicDamage = new CharacterStat(CharacterStatType.MagicDamage, 0);
+            WeaponDamageBonus = new CharacterStat(CharacterStatType.WeaponDamageBonus, 0);
+            MagicDamageBonus = new CharacterStat(CharacterStatType.MagicDamageBonus, 0);
+            MaxHealth = new CharacterStat(CharacterStatType.MaxHealth, baseMaxHealth);
+            MaxMagic = new CharacterStat(CharacterStatType.MaxMagic, baseMaxMagic);
+            AttackSpeed = new CharacterStat(CharacterStatType.AttackSpeed, baseAttackSpeed);
             //  Stamina = new CharacterStat(CharacterStat.Type.Stamina, 3.0f);
-            MoveSpeed = new CharacterStat(CharacterStat.Type.MoveSpeed, baseMoveSpeed);
-            Defense = new CharacterStat(CharacterStat.Type.Defense, baseDefense);                  // % Damage absorbed when hit
-            DodgeChance = new CharacterStat(CharacterStat.Type.DodgeChance, baseDodgeChance);      // % chance to avoid damage
-            CritChance = new CharacterStat(CharacterStat.Type.CritChance, baseCritChance);
-            CritDamage = new CharacterStat(CharacterStat.Type.CritDamage, baseCritDamage);
-            LifeRegen = new CharacterStat(CharacterStat.Type.LifeRegen, baseLifeRegen);            // Life and
-            MagicRegen = new CharacterStat(CharacterStat.Type.MagicRegen, baseMagicRegen);         // Magic "per second"
+            MoveSpeed = new CharacterStat(CharacterStatType.MoveSpeed, baseMoveSpeed);
+            Defense = new CharacterStat(CharacterStatType.Defense, baseDefense);                  // % Damage absorbed when hit
+            DodgeChance = new CharacterStat(CharacterStatType.DodgeChance, baseDodgeChance);      // % chance to avoid damage
+            CritChance = new CharacterStat(CharacterStatType.CritChance, baseCritChance);
+            CritDamage = new CharacterStat(CharacterStatType.CritDamage, baseCritDamage);
+            LifeRegen = new CharacterStat(CharacterStatType.LifeRegen, baseLifeRegen);            // Life and
+            MagicRegen = new CharacterStat(CharacterStatType.MagicRegen, baseMagicRegen);         // Magic "per second"
            // CooldownReduction = new CharacterStat(CharacterStat.Type.CooldownReduction, 0);       // All skill cooldowns -%Time
-            LifeOnHit = new CharacterStat(CharacterStat.Type.LifeOnHit, 0);                        // HP given per weapon hit
-            MagicOnHit = new CharacterStat(CharacterStat.Type.MagicOnHit, 0);                      // MP given per weapon hit
-            TreasureBonus = new CharacterStat(CharacterStat.Type.TreasureBonus, 0.0f);             // Improves item drop rate and quality
-            GoldBonus = new CharacterStat(CharacterStat.Type.GoldBonus, 0.0f);                     // %Gold drop increase
-            XPBonus = new CharacterStat(CharacterStat.Type.XPBonus, 0.0f);                         // %Bonus to XP earned from all sources
-            PickupRadius = new CharacterStat(CharacterStat.Type.PickupRadius, basePickupRadius);   // Pickup radius for gold and health pickups
+            LifeOnHit = new CharacterStat(CharacterStatType.LifeOnHit, 0);                        // HP given per weapon hit
+            MagicOnHit = new CharacterStat(CharacterStatType.MagicOnHit, 0);                      // MP given per weapon hit
+            TreasureBonus = new CharacterStat(CharacterStatType.TreasureBonus, 0.0f);             // Improves item drop rate and quality
+            GoldBonus = new CharacterStat(CharacterStatType.GoldBonus, 0.0f);                     // %Gold drop increase
+            XPBonus = new CharacterStat(CharacterStatType.XPBonus, 0.0f);                         // %Bonus to XP earned from all sources
+            PickupRadius = new CharacterStat(CharacterStatType.PickupRadius, basePickupRadius);   // Pickup radius for gold and health pickups
 
             CharacterStats.Add(WeaponDamage);
             CharacterStats.Add(MagicDamage);
@@ -402,6 +384,7 @@ namespace Assets.Scripts
             CharacterStats.Add(MagicDamageBonus);
             CharacterStats.Add(MaxHealth);
             CharacterStats.Add(MaxMagic);
+            CharacterStats.Add(AttackSpeed);
             // CharacterStats.Add(Stamina);
             CharacterStats.Add(MoveSpeed);
             CharacterStats.Add(Defense);
@@ -421,21 +404,21 @@ namespace Assets.Scripts
             // STAT MODIFIERS
             // Stat Modifiers from CoreStats
             // use PercentAdd for modifiers that are acting as % bonuses of an existing flat stat - have BONUS in the name
-            weaponDamageBonusModifier_Strength = new StatModifier(CharacterStat.Type.WeaponDamageBonus, StatModType.Flat, StatModifier.Source.CoreStat);
-            maxHealthBonusModifier_Constitution = new StatModifier(CharacterStat.Type.MaxHealth, StatModType.PercentAdd, StatModifier.Source.CoreStat);
-            maxMagicBonusModifier_Intelligence = new StatModifier(CharacterStat.Type.MaxMagic, StatModType.PercentAdd, StatModifier.Source.CoreStat);
-            magicDamageBonusModifier_Intelligence = new StatModifier(CharacterStat.Type.MagicDamageBonus, StatModType.Flat, StatModifier.Source.CoreStat);
-            magicRegenBonusModifier_Intelligence = new StatModifier(CharacterStat.Type.MagicRegen, StatModType.Flat, StatModifier.Source.CoreStat);
-            lifeRegenBonusModifier_Constitution = new StatModifier(CharacterStat.Type.LifeRegen, StatModType.Flat, StatModifier.Source.CoreStat);
+            weaponDamageBonusModifier_Strength = new StatModifier(CharacterStatType.WeaponDamageBonus, StatModType.Flat, StatModifierSource.CoreStat);
+            maxHealthBonusModifier_Constitution = new StatModifier(CharacterStatType.MaxHealth, StatModType.PercentAdd, StatModifierSource.CoreStat);
+            maxMagicBonusModifier_Intelligence = new StatModifier(CharacterStatType.MaxMagic, StatModType.PercentAdd, StatModifierSource.CoreStat);
+            magicDamageBonusModifier_Intelligence = new StatModifier(CharacterStatType.MagicDamageBonus, StatModType.Flat, StatModifierSource.CoreStat);
+            magicRegenBonusModifier_Intelligence = new StatModifier(CharacterStatType.MagicRegen, StatModType.Flat, StatModifierSource.CoreStat);
+            lifeRegenBonusModifier_Constitution = new StatModifier(CharacterStatType.LifeRegen, StatModType.Flat, StatModifierSource.CoreStat);
 
             // use Flat for modifiers that are simply added to, even if they're acting as bonuses
-            critDamageModifier_Strength = new StatModifier(CharacterStat.Type.CritDamage, StatModType.Flat, StatModifier.Source.CoreStat);
-            defenseModifier_Constitution = new StatModifier(CharacterStat.Type.Defense, StatModType.Flat, StatModifier.Source.CoreStat);
-            moveSpeedModifier_Agility = new StatModifier(CharacterStat.Type.MoveSpeed, StatModType.Flat, StatModifier.Source.CoreStat);
-            dodgeChanceModifier_Agility = new StatModifier(CharacterStat.Type.DodgeChance, StatModType.Flat, StatModifier.Source.CoreStat);
-            critChanceModifier_Luck = new StatModifier(CharacterStat.Type.CritChance, StatModType.Flat, StatModifier.Source.CoreStat);
-            pickupRadiusModifier_Luck = new StatModifier(CharacterStat.Type.PickupRadius, StatModType.Flat, StatModifier.Source.CoreStat);
-            goldModifier_Luck = new StatModifier(CharacterStat.Type.GoldBonus, StatModType.Flat, StatModifier.Source.CoreStat);
+            critDamageModifier_Strength = new StatModifier(CharacterStatType.CritDamage, StatModType.Flat, StatModifierSource.CoreStat);
+            defenseModifier_Constitution = new StatModifier(CharacterStatType.Defense, StatModType.Flat, StatModifierSource.CoreStat);
+            moveSpeedModifier_Agility = new StatModifier(CharacterStatType.MoveSpeed, StatModType.Flat, StatModifierSource.CoreStat);
+            dodgeChanceModifier_Agility = new StatModifier(CharacterStatType.DodgeChance, StatModType.Flat, StatModifierSource.CoreStat);
+            critChanceModifier_Luck = new StatModifier(CharacterStatType.CritChance, StatModType.Flat, StatModifierSource.CoreStat);
+            pickupRadiusModifier_Luck = new StatModifier(CharacterStatType.PickupRadius, StatModType.Flat, StatModifierSource.CoreStat);
+            goldModifier_Luck = new StatModifier(CharacterStatType.GoldBonus, StatModType.Flat, StatModifierSource.CoreStat);
 
             // Add modifiers from CoreStats
             WeaponDamageBonus.AddModifier(weaponDamageBonusModifier_Strength);
@@ -463,8 +446,8 @@ namespace Assets.Scripts
             // Create the individual modifiers there and let the CharacterStat do the math
 
             // Equip starting weapon
-            ItemCreator.Instance.CreateWeapon(Item.Quality.Common, ItemCreator.Instance.GetRandomWeaponType());
-            Inventory.Instance.EquipItem(Inventory.Instance.inventoryItems.Last());
+            var newWeapon = ItemCreator.Instance.CreateWeapon(ItemQuality.Common, ItemCreator.Instance.GetRandomWeaponType());
+            Equipment.Instance.EquipWeapon(newWeapon);
 
             // Other Stats
             currentHP = MaxHealth.Value;
@@ -481,17 +464,14 @@ namespace Assets.Scripts
 
 
 
-        public void AddStatsFromItem(Item item)
+        public void AddStatsFromItem(IEquippable item)
         {
-            // For every Attribute on the Item being equipped,
-            foreach (var statMod in item.itemAttributes)
+            foreach (var statMod in item.attributes)
             {
-                // Look through the master list of Player's CharacterStats
                 foreach (var stat in CharacterStats)
                     if (statMod.StatType == stat.type)
                         stat.AddModifier(statMod);
             }
-
 
             statsGUI.UpdateStatsGUI();
         }
@@ -518,15 +498,12 @@ namespace Assets.Scripts
         }
         */
 
-        public void RemoveStatModifiersFromSource(Item item, StatModifier.Source source)
+        public void RemoveStatModifiersFromSource(IEquippable item, StatModifierSource source)
         {
-            // For every StatModifier on the item we're unequipping,
-            foreach (var statMod in item.itemAttributes)
+            foreach (var statMod in item.attributes)
             {
-                // Search through player's master list of CharacterStats
                 foreach (var stat in CharacterStats)
                 {
-                    // If stat type and source match the stat on the item we're unequipping, remove the stat
                     if (statMod.StatType == stat.type && statMod.source == source)
                         stat.RemoveModifier(statMod);
                 }
@@ -590,7 +567,7 @@ namespace Assets.Scripts
         public void AllocateStatPoint(CharacterStat coreStat)
         {
             foreach (var statMod in coreStat.statModifiers)
-                if (statMod.source == StatModifier.Source.StatPoints)
+                if (statMod.source == StatModifierSource.StatPoints)
                 {
                     if (statPoints > 0)
                     {
@@ -606,7 +583,7 @@ namespace Assets.Scripts
         public void DeallocateStatPoint(CharacterStat coreStat)
         {
             foreach (var statMod in coreStat.statModifiers)
-                if (statMod.source == StatModifier.Source.StatPoints)
+                if (statMod.source == StatModifierSource.StatPoints)
                 {
                     if (statMod.Value >= 1)
                     {
@@ -624,7 +601,7 @@ namespace Assets.Scripts
         {
             foreach (var characterStat in CharacterStats)
                 foreach (var statMod in characterStat.statModifiers)
-                    if (statMod.source == StatModifier.Source.StatPoints)
+                    if (statMod.source == StatModifierSource.StatPoints)
                     {
                         statPoints += (int)statMod.Value;
                         statMod.Value = 0;
@@ -639,7 +616,7 @@ namespace Assets.Scripts
         public void ResetStatPoints(CharacterStat coreStat)
         {
             foreach (var statMod in coreStat.statModifiers)
-                if (statMod.source == StatModifier.Source.StatPoints)
+                if (statMod.source == StatModifierSource.StatPoints)
                 {
                     statPoints += (int)statMod.Value;
                     statMod.Value = 0;
@@ -750,7 +727,7 @@ namespace Assets.Scripts
         // Reset stats on quit
         private void OnApplicationQuit()
         {
-            Inventory.Instance.UnequipAllItems();
+            Equipment.Instance.UnequipAllItems();
             //CalculateStats();
             InitializePlayerStats();
 
@@ -1046,8 +1023,8 @@ namespace Assets.Scripts
         {
             if (clockRunning)
             {
-                timeThisRun = Time.timeSinceLevelLoad;
-                clock = timeThisRun + timePreviousRuns;
+                //timeThisRun = Time.timeSinceLevelLoad;
+                //clock = timeThisRun + timePreviousRuns;
                 //clock = Time.fixedUnscaledTime;
                 HUD.Instance.clockText.text = TimeFormat(clock).ToString();
             }

@@ -70,7 +70,7 @@ namespace Assets.Scripts
         [HideInInspector]
         public Color damaged = new Color(120, 100, 0);
 
-        public EquipSlotGUI
+        public EquipmentSlotGUI
             weaponSlotGUI,
             helmSlotGUI,
             mailSlotGUI,

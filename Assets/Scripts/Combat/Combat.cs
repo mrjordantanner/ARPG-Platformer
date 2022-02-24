@@ -18,7 +18,6 @@ namespace Assets.Scripts
 
         [HideInInspector]
         public PlayerCharacter player;
-        MeleeAttack playerMeleeAttack;
         EnemyMovement enemyMovement;
         IEnemyBehavior enemyBehavior;
         EnemyCharacter enemy;
@@ -90,7 +89,6 @@ namespace Assets.Scripts
         void Start()
         {
             player = PlayerRef.Player;
-            playerMeleeAttack = FindObjectOfType<MeleeAttack>();
             FloatingTextContainer = new GameObject("FloatingTextContainer");
             VFXContainer = new GameObject("VFXContainer");
 
@@ -165,13 +163,13 @@ namespace Assets.Scripts
         // TODO:  Consolidate these methods by passing in the DamagerBase type, then we can process any kind of damager in one method
         // (if that makes sense to do)
         // PLAYER WEAPON STRIKES ENEMY
-        public void EnemyHitByWeapon(Item.Weapon weapon, EnemyCharacter enemy)
+        public void EnemyHitByWeapon(Weapon weapon, EnemyCharacter enemy)
         {
             bool criticalHit = false;
             enemyBehavior = enemy.gameObject.GetComponentInChildren<IEnemyBehavior>();
 
             // Roll for damage from within valueRange% higher and lower than Value of WeaponDamage (WeaponDamageBonus already calculated)
-            var damage = RandomizeValueWithinRange(Stats.Instance.WeaponDamage.Value, weapon.accuracy);
+            var damage = RandomizeValueWithinRange(Stats.Instance.WeaponDamage.Value, weapon.damageRange);
 
             // Roll for crit
             var crit = Random.value;
@@ -189,8 +187,9 @@ namespace Assets.Scripts
             // Calculate OnHit effects 
             if (onHitTimer <= 0)
             {
-                Stats.Instance.currentHP += Mathf.RoundToInt(Stats.Instance.LifeOnHit.Value * Stats.Instance.MaxHealth.Value);
-                Stats.Instance.currentMP += Mathf.RoundToInt(Stats.Instance.MagicOnHit.Value * Stats.Instance.MaxMagic.Value);
+                Stats.Instance.GainHP(Stats.Instance.LifeOnHit.Value * Stats.Instance.MaxHealth.Value);
+                Stats.Instance.GainMP(Stats.Instance.MagicOnHit.Value * Stats.Instance.MaxMagic.Value);
+
                 //foreach (var effect in weapon.onHitEffects)
                 //{
                 //    switch (effect)
@@ -213,30 +212,28 @@ namespace Assets.Scripts
                 onHitTimer = onHitCooldown;
             }
 
-            // Combo
-            if (weapon != null)
-            {
-                if (weapon.combos)
-                {
-                    ComboCheck(weapon);
-                    timeOfLastHit = Time.time;
-                }
+            // Combos
+            //if (weapon.combos)
+            //{
+            //    ComboCheck(weapon);
+            //    timeOfLastHit = Time.time;
+            //}
 
-                if (weapon.hitStun > 0)
-                    StartCoroutine(HitStun(enemy, weapon.hitStun));
-            }
+            var weaponTraits = AttackController.Instance.equippedWeaponTraits;
+
+            // Enemy Hit Stop
+            StartCoroutine(HitStun(enemy, weaponTraits[WeaponTrait.EnemyHitStop]));
+
+            // Player Hit Stop
+            StartCoroutine(PlayerHitStop(weaponTraits[WeaponTrait.PlayerHitStop]));
 
             // Air Hover
-            if (!player.grounded && weapon.airHover > 0 && player.velocity.y < 0)  // change so AirHover only happens while falling?
+            if (!player.grounded && weaponTraits[WeaponTrait.AirHover] > 0 && player.velocity.y < 0)  // TODO: change so AirHover only happens while falling?
             {
                 player.velocity.y = 0;
-                StartCoroutine(player.PauseY(weapon.airHover));
-                StartCoroutine(player.PauseX(weapon.airHover));
+                StartCoroutine(player.PauseY(weaponTraits[WeaponTrait.AirHover]));
+                StartCoroutine(player.PauseX(weaponTraits[WeaponTrait.AirHover]));
             }
-
-
-            // MELEE PLAYER HIT STOP
-            StartCoroutine(PlayerHitStop(weapon.playerHitStop));
 
             // Reset damage for next hit
             damage = 0;
@@ -620,49 +617,49 @@ namespace Assets.Scripts
         // Player Animation clip
         // Enemy Animation clip (or behavior, e.g. knocked into air by uppercut)
 
-        void ComboCheck(Item.Weapon weapon)
-        {
-            if ((Time.time - timeOfLastHit) <= comboGapTime)
-            {
-                comboHits++;
+        //void ComboCheck(Weapon weapon)
+        //{
+        //    if ((Time.time - timeOfLastHit) <= comboGapTime)
+        //    {
+        //        comboHits++;
 
-                if (comboHits > maxComboHits)
-                    comboHits = 1;
+        //        if (comboHits > maxComboHits)
+        //            comboHits = 1;
 
-                switch (comboHits)
-                {
-                    case 1: // "Left Swing"
-                            // Player Animation 1
-                            // Weapon Animation 1
-                            // Start Attack 1 Coroutine
-                        break;
+        //        switch (comboHits)
+        //        {
+        //            case 1: // "Left Swing"
+        //                    // Player Animation 1
+        //                    // Weapon Animation 1
+        //                    // Start Attack 1 Coroutine
+        //                break;
 
-                    case 2:  // "Right Swing"
-                             // Player Animation 2
-                             // Weapon Animation 2
-                             // Start Attack 2 Coroutine
-                        break;
+        //            case 2:  // "Right Swing"
+        //                     // Player Animation 2
+        //                     // Weapon Animation 2
+        //                     // Start Attack 2 Coroutine
+        //                break;
 
-                    case 3:  // "Uppercut Swing"
-                             // Player Animation 3
-                             // Weapon Animation 3
-                             // Start Attack 3 Coroutine
-                             // Add RB to enemy and Addforce
-                        break;
-                }
+        //            case 3:  // "Uppercut Swing"
+        //                     // Player Animation 3
+        //                     // Weapon Animation 3
+        //                     // Start Attack 3 Coroutine
+        //                     // Add RB to enemy and Addforce
+        //                break;
+        //        }
 
 
 
-            }
-            else
-            {
-                comboHits = 1;  // since we're checking onHit, we have to award one hit here
-                timeOfLastHit = 0;
-            }
+        //    }
+        //    else
+        //    {
+        //        comboHits = 1;  // since we're checking onHit, we have to award one hit here
+        //        timeOfLastHit = 0;
+        //    }
 
-            weapon.comboHits = comboHits;
-            HUD.Instance.comboHits.text = comboHits.ToString();
-        }
+        //    weapon.comboHits = comboHits;
+        //    HUD.Instance.comboHits.text = comboHits.ToString();
+        //}
 
 
         IEnumerator PlayerHitStop(float duration)
@@ -670,15 +667,14 @@ namespace Assets.Scripts
             player.canMove = false;
             player.inputSuspended = true;
             player.anim.enabled = false;
-            playerMeleeAttack.weaponAnim.enabled = false;
+            AttackController.Instance.weaponAnim.enabled = false;
 
             yield return new WaitForSeconds(duration);
 
             player.canMove = true;
             player.inputSuspended = false;
             player.anim.enabled = true;
-            if (playerMeleeAttack.weaponAnim != null)
-                playerMeleeAttack.weaponAnim.enabled = true;
+            AttackController.Instance.weaponAnim.enabled = true;
 
         }
 
@@ -863,7 +859,7 @@ namespace Assets.Scripts
 
             NewEffectInstance.Name = "Slow";
             NewEffectInstance._EffectType = StatusEffect.EffectType.Slow;
-            NewEffectInstance.StatType = CharacterStat.Type.MoveSpeed;
+            NewEffectInstance.StatType = CharacterStatType.MoveSpeed;
             NewEffectInstance.Value = -0.5f;
             NewEffectInstance.Duration = 4;
             NewEffectInstance.Mode = StatusEffect.ApplyMode.Single;
@@ -884,7 +880,7 @@ namespace Assets.Scripts
 
             NewEffectInstance.Name = "SpeedUp";
             NewEffectInstance._EffectType = StatusEffect.EffectType.SpeedUp;
-            NewEffectInstance.StatType = CharacterStat.Type.MoveSpeed;
+            NewEffectInstance.StatType = CharacterStatType.MoveSpeed;
             NewEffectInstance._StatModType = StatModType.Flat;
             NewEffectInstance.Value = 0.075f;
             NewEffectInstance.Duration = 1f;
@@ -905,7 +901,7 @@ namespace Assets.Scripts
                 NewEffectInstance = player.gameObject.AddComponent<AffectCharacterStat>();
                 NewEffectInstance.Name = "MagicDamageBonus";
                 NewEffectInstance._EffectType = StatusEffect.EffectType.MagicDamageBonus;
-                NewEffectInstance.StatType = CharacterStat.Type.MagicDamageBonus;
+                NewEffectInstance.StatType = CharacterStatType.MagicDamageBonus;
                 NewEffectInstance.Mode = StatusEffect.ApplyMode.Stack;
                 NewEffectInstance._StatModType = StatModType.Flat;
                 NewEffectInstance.Value = 0.05f;

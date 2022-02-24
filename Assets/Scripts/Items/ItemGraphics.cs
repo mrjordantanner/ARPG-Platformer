@@ -58,14 +58,14 @@ namespace Assets.Scripts
 
             allBackgrounds = Resources.LoadAll<Sprite>("Icons/Backgrounds");
 
-            armor.allArmor = Resources.LoadAll<Sprite>("Icons/Items/Armor");
+            //armor.allArmor = Resources.LoadAll<Sprite>("Icons/Items/Armor");
             armor.helms = Resources.LoadAll<Sprite>("Icons/Items/Armor/Helms");
             armor.mail = Resources.LoadAll<Sprite>("Icons/Items/Armor/Mail");
             armor.cloaks = Resources.LoadAll<Sprite>("Icons/Items/Armor/Gloves");
             armor.bracers = Resources.LoadAll<Sprite>("Icons/Items/Armor/Bracers");
             armor.boots = Resources.LoadAll<Sprite>("Icons/Items/Armor/Boots");
 
-            weapons.allWeapons = Resources.LoadAll<Sprite>("Icons/Items/Weapons");
+            //weapons.allWeapons = Resources.LoadAll<Sprite>("Icons/Items/Weapons");
             weapons.swords = Resources.LoadAll<Sprite>("Icons/Items/Weapons/Swords");
             weapons.axes = Resources.LoadAll<Sprite>("Icons/Items/Weapons/Axes");
             weapons.maces = Resources.LoadAll<Sprite>("Icons/Items/Weapons/Maces");
@@ -84,7 +84,6 @@ namespace Assets.Scripts
         public class Armor
         {
             public Sprite[]
-                allArmor,
                 helms,
                 mail,
                 cloaks,
@@ -95,7 +94,6 @@ namespace Assets.Scripts
         public class Weapons
         {
             public Sprite[]
-                allWeapons,
                 swords,
                 axes,
                 maces,

@@ -14,7 +14,7 @@ namespace Assets.Scripts
         public float damageIncrease = 1f;
 
         [Header("Velocity")]
-        public Range velocity = new Range(20f, 20f);
+        public StatRange velocity = new StatRange(20f, 20f);
         public Vector2 offset = new Vector2(0.4f, 0.1f);
 
         [HideInInspector]
@@ -22,16 +22,16 @@ namespace Assets.Scripts
         float currentDamage;
 
         [Header("Damage Range")]
-        public Range damageRange = new Range(20, 100);
-        public Range baseDamageRange = new Range(20, 100);
+        public StatRange damageRange = new StatRange(20, 100);
+        public StatRange baseDamageRange = new StatRange(20, 100);
 
         [Header("Gain Damage")]
-        public Range baseDamageGainRange = new Range(20, 100);
+        public StatRange baseDamageGainRange = new StatRange(20, 100);
         public float powerLevel;                           // % indicating max power orb is currently at, can be used to affect the damage
         public bool affectWeaponDamage;                    // affect sword damage too? maybe check for certain sword equipped e.g. "Blood" etc
         public float affectWeaponDamageAmount = 1.01f;     // gain 1% wpn damg per powerLevel %
         public float timeToMaxDamage = 5f;
-        Range damageGainRange;
+        StatRange damageGainRange;
 
         float damageTimer;
         float curDamage;

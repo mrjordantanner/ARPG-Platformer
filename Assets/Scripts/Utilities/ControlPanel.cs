@@ -14,29 +14,29 @@ namespace Assets.Scripts
             // Max Equipment
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                ItemCreator.Instance.CreateWeapon(Item.Quality.Magical, Item.Weapon.Type.Sword);
-                var sword = Inventory.Instance.inventoryItems.Last();
-                Inventory.Instance.EquipItem(sword);
+                ItemCreator.Instance.CreateWeapon(ItemQuality.Magical, WeaponType.Sword);
+                var sword = Inventory.Instance.inventoryWeaponSlots.Last();
+                Equipment.Instance.EquipWeapon((Weapon)sword);
 
-                ItemCreator.Instance.CreateArmor(Item.Quality.Magical, Item.Armor.Type.Helm);
-                var helm = Inventory.Instance.inventoryItems.Last();
-                Inventory.Instance.EquipItem(helm);
+                ItemCreator.Instance.CreateArmor(ItemQuality.Magical, ArmorType.Helm);
+                var helm = Inventory.Instance.inventoryArmorSlots[ArmorType.Helm].Last();
+                Equipment.Instance.EquipArmor((Armor)helm);
 
-                ItemCreator.Instance.CreateArmor(Item.Quality.Magical, Item.Armor.Type.Mail);
-                var mail = Inventory.Instance.inventoryItems.Last();
-                Inventory.Instance.EquipItem(mail);
+                ItemCreator.Instance.CreateArmor(ItemQuality.Magical, ArmorType.Mail);
+                var mail = Inventory.Instance.inventoryArmorSlots[ArmorType.Mail].Last();
+                Equipment.Instance.EquipArmor((Armor)mail);
 
-                ItemCreator.Instance.CreateArmor(Item.Quality.Magical, Item.Armor.Type.Cloak);
-                var cloak = Inventory.Instance.inventoryItems.Last();
-                Inventory.Instance.EquipItem(cloak);
+                ItemCreator.Instance.CreateArmor(ItemQuality.Magical, ArmorType.Cloak);
+                var cloak = Inventory.Instance.inventoryArmorSlots[ArmorType.Cloak].Last();
+                Equipment.Instance.EquipArmor((Armor)cloak);
 
-                ItemCreator.Instance.CreateArmor(Item.Quality.Magical, Item.Armor.Type.Bracers);
-                var bracers = Inventory.Instance.inventoryItems.Last();
-                Inventory.Instance.EquipItem(bracers);
+                ItemCreator.Instance.CreateArmor(ItemQuality.Magical, ArmorType.Bracers);
+                var bracers = Inventory.Instance.inventoryArmorSlots[ArmorType.Bracers].Last();
+                Equipment.Instance.EquipArmor((Armor)bracers);
 
-                ItemCreator.Instance.CreateArmor(Item.Quality.Magical, Item.Armor.Type.Boots);
-                var boots = Inventory.Instance.inventoryItems.Last();
-                Inventory.Instance.EquipItem(boots);
+                ItemCreator.Instance.CreateArmor(ItemQuality.Magical, ArmorType.Boots);
+                var boots = Inventory.Instance.inventoryArmorSlots[ArmorType.Boots].Last();
+                Equipment.Instance.EquipArmor((Armor)boots);
             }
 
             // Create Weapon of random type and quality
@@ -50,19 +50,19 @@ namespace Assets.Scripts
 
             // Unequip all
             if (Input.GetKeyDown(KeyCode.Alpha4))
-                Inventory.Instance.UnequipAllItems();
+                Equipment.Instance.UnequipAllItems();
 
             // Clear inventory and console
             if (Input.GetKeyDown(KeyCode.Alpha5))
-                Inventory.Instance.Clear();
+                Inventory.Instance.ClearInventory();
 
             //Equip last item
-            if (Input.GetKeyDown(KeyCode.Alpha7))
-            {
-                var lastItem = Inventory.Instance.inventoryItems.Last();
-                if (lastItem != null)
-                    Inventory.Instance.EquipItem(lastItem);
-            }
+            //if (Input.GetKeyDown(KeyCode.Alpha7))
+            //{
+            //    var lastItem = Inventory.Instance.inventoryItems.Last();
+            //    if (lastItem != null)
+            //        Inventory.Instance.EquipItem(lastItem);
+            //}
 
             // Clear Enemies
             if (Input.GetKeyDown(KeyCode.Alpha9))

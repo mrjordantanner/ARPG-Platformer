@@ -183,13 +183,13 @@ namespace Assets.Scripts
 
         void InitializeEnemyStats()
         {
-            MaxHealth = new CharacterStat(CharacterStat.Type.MaxHealth, baseMaxHealth);
-            MoveSpeed = new CharacterStat(CharacterStat.Type.MoveSpeed, baseMoveSpeed);
-            Defense = new CharacterStat(CharacterStat.Type.Defense, baseDefense);
-           // MagicDefense = new CharacterStat(CharacterStat.Type.MagicDefense, baseMagicDefense);
-            ContactDamage = new CharacterStat(CharacterStat.Type.ContactDamage, baseContactDamage);
-            XP = new CharacterStat(CharacterStat.Type.XP, baseXP);
-            WeaponDamage = new CharacterStat(CharacterStat.Type.WeaponDamage, baseWeaponDamage);
+            MaxHealth = new CharacterStat(CharacterStatType.MaxHealth, baseMaxHealth);
+            MoveSpeed = new CharacterStat(CharacterStatType.MoveSpeed, baseMoveSpeed);
+            Defense = new CharacterStat(CharacterStatType.Defense, baseDefense);
+           // MagicDefense = new CharacterStat(CharacterStatType.MagicDefense, baseMagicDefense);
+            ContactDamage = new CharacterStat(CharacterStatType.ContactDamage, baseContactDamage);
+            XP = new CharacterStat(CharacterStatType.XP, baseXP);
+            WeaponDamage = new CharacterStat(CharacterStatType.WeaponDamage, baseWeaponDamage);
 
             CharacterStats.Add(MaxHealth);
             CharacterStats.Add(MoveSpeed);
@@ -199,10 +199,10 @@ namespace Assets.Scripts
             CharacterStats.Add(ContactDamage);
             CharacterStats.Add(WeaponDamage);
 
-            maxHealthModifier_Difficulty = new StatModifier(CharacterStat.Type.MaxHealth, StatModType.PercentAdd, StatModifier.Source.Difficulty);
-            contactDamageModifier_Difficulty = new StatModifier(CharacterStat.Type.ContactDamage, StatModType.PercentAdd, StatModifier.Source.Difficulty);
-            weaponDamageModifier_Difficulty = new StatModifier(CharacterStat.Type.WeaponDamage, StatModType.PercentAdd, StatModifier.Source.Difficulty);
-            xpModifier_Difficulty = new StatModifier(CharacterStat.Type.XP, StatModType.PercentAdd, StatModifier.Source.Difficulty);
+            maxHealthModifier_Difficulty = new StatModifier(CharacterStatType.MaxHealth, StatModType.PercentAdd, StatModifierSource.Difficulty);
+            contactDamageModifier_Difficulty = new StatModifier(CharacterStatType.ContactDamage, StatModType.PercentAdd, StatModifierSource.Difficulty);
+            weaponDamageModifier_Difficulty = new StatModifier(CharacterStatType.WeaponDamage, StatModType.PercentAdd, StatModifierSource.Difficulty);
+            xpModifier_Difficulty = new StatModifier(CharacterStatType.XP, StatModType.PercentAdd, StatModifierSource.Difficulty);
 
             if (Difficulty.Instance.difficultyLevel > 1)
                 CalculateStatsBasedOnDifficulty();

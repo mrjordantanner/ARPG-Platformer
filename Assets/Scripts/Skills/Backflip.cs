@@ -6,7 +6,7 @@ namespace Assets.Scripts
     {
         public override int Index { get { return 5; } }
         public override string SkillName { get { return "Backflip"; } }
-        public override Item.Spec SkillSpec { get { return Item.Spec.Bone; } }
+        //public override Item.Spec SkillSpec { get { return Item.Spec.Bone; } }
         public override Resource SkillResource { get { return Resource.Stamina; } }
         public override float Range { get { return 3f; } }
 
